@@ -1,0 +1,15 @@
+
+<phpunit bootstrap="./bootstrap.php" colors="true">
+    <testsuite name="TDD">
+        <directory>./</directory>
+    </testsuite>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../</directory>
+            <exclude>
+                <directory>./</directory>
+                <file>../exemplo.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
