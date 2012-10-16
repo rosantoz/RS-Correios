@@ -390,24 +390,27 @@ class RsCorreios
      */
     public function getWebServiceUrl()
     {
-        $url  = $this->webServiceUrl . $this->webServiceUrlPath;
-        $url .= "?nCdEmpresa=";
-        $url .= "&sDsSenha=";
-        $url .= "&sCepOrigem=" . $this->getCepOrigem();
-        $url .= "&sCepDestino=" . $this->getCepDestino();
-        $url .= "&nVlPeso=" . $this->getPeso();
-        $url .= "&nCdFormato=" . $this->getFormatoDaEncomenda();
-        $url .= "&nVlComprimento=" . $this->getComprimento();
-        $url .= "&nVlAltura=" . $this->getAltura();
-        $url .= "&nVlLargura=" . $this->getLargura();
-        $url .= "&sCdMaoPropria=" . $this->getMaoPropria() ? 'S' : 'N';
-        $url .= "&nVlValorDeclarado=" . $this->getValorDeclarado();
-        $url .= "&sCdAvisoRecebimento=" . $this->getAvisoDeRecebimento() ? 'S' : 'N';
-        $url .= "&nCdServico=" . $this->getServico();
-        $url .= "&nVlDiametro=0";
-        $url .= "&StrRetorno=xml";
+        $url  = $this->webServiceUrl . $this->webServiceUrlPath . '?';
 
-        return $url;
+	    $params = array(
+		    "nCdEmpresa" => '',
+	        "sDsSenha" => '',
+			"nCdServico" => $this->getServico(),
+			"sCepOrigem" => $this->getCepOrigem(),
+			"sCepDestino" => $this->getCepDestino(),
+			"nVlPeso" => $this->getPeso(),
+			"nCdFormato" => $this->getFormatoDaEncomenda(),
+			"nVlComprimento" => $this->getComprimento(),
+			"nVlAltura" => $this->getAltura(),
+			"nVlLargura" => $this->getLargura(),
+			"nVlDiametro" => '0',
+			"sCdMaoPropria" => $this->getMaoPropria() ? 'S' : 'N',
+			"nVlValorDeclarado" => $this->getValorDeclarado(),
+			"sCdAvisoRecebimento" => $this->getAvisoDeRecebimento() ? 'S' : 'N',
+		    'StrRetorno' => 'XML'
+	    );
+
+        return $url . http_build_query($params, '', '&');
     }
 
     /**
@@ -459,22 +462,21 @@ class RsCorreios
 
 	    if ($xml !== false)
 	    {
-		    $resposta['servico']           = $xml->cServico->Codigo;
-		    $resposta['valor']             = $xml->cServico->Valor;
-		    $resposta['prazoEntrega']      = $xml->cServico->PrazoEntrega;
-		    $resposta['maoPropria']        = $xml->cServico->ValorMaoPropria;
-		    $resposta['avisoRecebimento']  = $xml->cServico->ValorAvisoRecebimento;
-		    $resposta['valorDeclarado']    = $xml->cServico->ValorValorDeclarado;
-		    $resposta['entregaDomiciliar'] = $xml->cServico->EntregaDomiciliar;
-		    $resposta['entregaSabado']     = $xml->cServico->EntregaSabado;
-		    $resposta['erro']              = $xml->cServico->Erro;
-		    $resposta['msgErro']           = $xml->cServico->MsgErro;
+		    $resposta['servico']           = (string)$xml->cServico->Codigo;
+		    $resposta['valor']             = (string)$xml->cServico->Valor;
+		    $resposta['prazoEntrega']      = (string)$xml->cServico->PrazoEntrega;
+		    $resposta['maoPropria']        = (string)$xml->cServico->ValorMaoPropria;
+		    $resposta['avisoRecebimento']  = (string)$xml->cServico->ValorAvisoRecebimento;
+		    $resposta['valorDeclarado']    = (string)$xml->cServico->ValorValorDeclarado;
+		    $resposta['entregaDomiciliar'] = (string)$xml->cServico->EntregaDomiciliar;
+		    $resposta['entregaSabado']     = (string)$xml->cServico->EntregaSabado;
+		    $resposta['erro']              = (string)$xml->cServico->Erro;
+		    $resposta['msgErro']           = (string)$xml->cServico->MsgErro;
 	    }
 	    else
 	    {
 		    throw new Exception('Resposta XML malformada');
 	    }
-
         return $resposta;
     }
 
