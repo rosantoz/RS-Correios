@@ -28,7 +28,7 @@
 class RsCorreios
 {
 
-    const TIPO_SEDEX            = 40010;
+	const TIPO_SEDEX            = 40010;
 	const TIPO_SEDEX_A_COBRAR   = 40045;
 	const TIPO_SEDEX_10         = 40215;
 	const TIPO_SEDEX_HOJE       = 40290;
@@ -448,7 +448,7 @@ class RsCorreios
      * @throws Exception
      * @return array
      */
-    public function getDadosFrete()
+    public function dados()
     {
 
         $response = $this->conecta();
