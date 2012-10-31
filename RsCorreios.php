@@ -481,7 +481,7 @@ class RsCorreios {
 		if ($xml !== false)
 		{
 			$resposta['servico'] = (string) $xml->cServico->Codigo;
-			$resposta['valor'] = (string) $xml->cServico->Valor;
+			$resposta['valor'] = str_replace(',', '.', (string) $xml->cServico->Valor);
 			$resposta['prazoEntrega'] = (string) $xml->cServico->PrazoEntrega;
 			$resposta['maoPropria'] = (string) $xml->cServico->ValorMaoPropria;
 			$resposta['avisoRecebimento'] = (string) $xml->cServico->ValorAvisoRecebimento;
