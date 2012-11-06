@@ -258,7 +258,7 @@ class RsCorreios
      */
     public function getMaoPropria()
     {
-        return $this->maoPropria;
+        return $this->maoPropria ? 'S' : 'N';
     }
 
     /**
@@ -285,7 +285,7 @@ class RsCorreios
      */
     public function getAvisoDeRecebimento()
     {
-        return $this->avisoDeRecebimento;
+        return $this->avisoDeRecebimento ? 'S' : 'N';
     }
 
     /**
@@ -415,9 +415,9 @@ class RsCorreios
             "nVlAltura" => $this->getAltura(),
             "nVlLargura" => $this->getLargura(),
             "nVlDiametro" => '0',
-            "sCdMaoPropria" => $this->getMaoPropria() ? 'S' : 'N',
+            "sCdMaoPropria" => $this->getMaoPropria(),
             "nVlValorDeclarado" => $this->getValorDeclarado(),
-            "sCdAvisoRecebimento" => $this->getAvisoDeRecebimento() ? 'S' : 'N',
+            "sCdAvisoRecebimento" => $this->getAvisoDeRecebimento(),
             "StrRetorno" => 'XML'
         );
 

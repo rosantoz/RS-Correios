@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Testes da classe RsCorreios
  * 
@@ -11,7 +12,6 @@
  * @version  Release: <1.0>
  * @link     www.rodrigodossantos.ws
  */
-
 require_once '../RsCorreios.php';
 
 /**
@@ -30,42 +30,42 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
     protected $frete;
     protected $webServiceUrl;
     protected $resposta;
- 
+
     /**
      * Setup para iniciação de cada teste
      * 
      * @return void
      */
-    public function setUp() 
+    public function setUp()
     {
         parent::setUp();
 
-        $this->frete          = new RsCorreios();
-        $this->webServiceUrl  = "http://ws.correios.com.br/";
+        $this->frete = new RsCorreios();
+        $this->webServiceUrl = "http://ws.correios.com.br/";
         $this->webServiceUrl .= "calculador/CalcPrecoPrazo.aspx";
-        $this->resposta       = '<?xml version="1.0" encoding="ISO-8859-1" ?>';
-        $this->resposta      .= '<Servicos><cServico>';
-        $this->resposta      .= '<Codigo>41106</Codigo>';
-        $this->resposta      .= '<Valor>10,50</Valor>';
-        $this->resposta      .= '<PrazoEntrega>3</PrazoEntrega>';
-        $this->resposta      .= '<ValorMaoPropria>0,00</ValorMaoPropria>';
-        $this->resposta      .= '<ValorAvisoRecebimento>';
-        $this->resposta      .= '0,00</ValorAvisoRecebimento>';
-        $this->resposta      .= '<ValorValorDeclarado>0,00</ValorValorDeclarado>';
-        $this->resposta      .= '<EntregaDomiciliar>S</EntregaDomiciliar>';
-        $this->resposta      .= '<EntregaSabado>N</EntregaSabado>';
-        $this->resposta      .= '<Erro>0</Erro>';
-        $this->resposta      .= '<MsgErro></MsgErro>';
-        $this->resposta      .= '</cServico></Servicos>';
+        $this->resposta = '<?xml version="1.0" encoding="ISO-8859-1" ?>';
+        $this->resposta .= '<Servicos><cServico>';
+        $this->resposta .= '<Codigo>41106</Codigo>';
+        $this->resposta .= '<Valor>10,50</Valor>';
+        $this->resposta .= '<PrazoEntrega>3</PrazoEntrega>';
+        $this->resposta .= '<ValorMaoPropria>0,00</ValorMaoPropria>';
+        $this->resposta .= '<ValorAvisoRecebimento>';
+        $this->resposta .= '0,00</ValorAvisoRecebimento>';
+        $this->resposta .= '<ValorValorDeclarado>0,00</ValorValorDeclarado>';
+        $this->resposta .= '<EntregaDomiciliar>S</EntregaDomiciliar>';
+        $this->resposta .= '<EntregaSabado>N</EntregaSabado>';
+        $this->resposta .= '<Erro>0</Erro>';
+        $this->resposta .= '<MsgErro></MsgErro>';
+        $this->resposta .= '</cServico></Servicos>';
     }
 
-    /** 
-    * Verifica se o get e set do CEP de Origem estão funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se o get e set do CEP de Origem estão funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterDoCepDeOrigem()
     {
         $cepOrigem = "88101000";
@@ -103,59 +103,57 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $cepFormatado2 = '88.134-400';
         $this->frete->setCepOrigem($cepFormatado2);
         $this->assertEquals('88134400', $this->frete->getCepOrigem());
-
     }
 
-    /** 
-    * Verifica se os get e set do peso estão funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
-    public function verificaGetterAndSetterDoPeso() 
+    /**
+     * Verifica se os get e set do peso estão funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
+    public function verificaGetterAndSetterDoPeso()
     {
         $peso = '0.500';
         $this->frete->setPeso($peso);
         $this->assertEquals($peso, $this->frete->getPeso());
     }
 
-    
-    /** 
-    * Testa a formatação do peso para o três casas decimais
-    * 
-    * @test
-    * 
-    * @return void
-    */
-    public function verificaSeEstaFormatandoOPeso() 
+    /**
+     * Testa a formatação do peso para o três casas decimais
+     * 
+     * @test
+     * 
+     * @return void
+     */
+    public function verificaSeEstaFormatandoOPeso()
     {
         $peso = "1.10";
         $this->frete->setPeso($peso);
         $this->assertEquals("1.100", $this->frete->getPeso());
     }
 
-    /** 
-    * Testa a formatação do valor declarado para duas casas decimais
-    * 
-    * @test
-    * 
-    * @return void
-    */
-    public function verificaSeEstaFormatandoOValorDeclarado() 
+    /**
+     * Testa a formatação do valor declarado para duas casas decimais
+     * 
+     * @test
+     * 
+     * @return void
+     */
+    public function verificaSeEstaFormatandoOValorDeclarado()
     {
         $valor = "102.1";
         $this->frete->setValorDeclarado($valor);
         $this->assertEquals("102.10", $this->frete->getValorDeclarado());
     }
 
-    /** 
-    * Verifica se os get e set da altura estão funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se os get e set da altura estão funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterDaAltura()
     {
         $altura = '35';
@@ -163,13 +161,13 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $this->assertEquals($altura, $this->frete->getAltura());
     }
 
-    /** 
-    * Verifica se os get e set do comprimento estão funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se os get e set do comprimento estão funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterDoComprimento()
     {
         $comprimento = '42';
@@ -177,14 +175,13 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $this->assertEquals($comprimento, $this->frete->getComprimento());
     }
 
-
-    /** 
-    * Verifica se os get e set da largura estão funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se os get e set da largura estão funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterDaLargura()
     {
         $largura = '12';
@@ -192,44 +189,36 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $this->assertEquals($largura, $this->frete->getLargura());
     }
 
-    /** 
-    * Verifica se os get e set 'Aviso de Recebimento' está funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se os get e set 'Aviso de Recebimento' está funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterDoAvisoDeRecebimento()
     {
-        $avisoDeRecebimento = 'S';
-        $this->frete->setAvisoDeRecebimento($avisoDeRecebimento);
-        $this->assertEquals($avisoDeRecebimento,
-            $this->frete->getAvisoDeRecebimento());
+        $this->frete->setAvisoDeRecebimento(true);
+        $this->assertEquals('S', $this->frete->getAvisoDeRecebimento());
 
-        $avisoDeRecebimento = 'N';
-        $this->frete->setAvisoDeRecebimento($avisoDeRecebimento);
-        $this->assertEquals($avisoDeRecebimento,
-            $this->frete->getAvisoDeRecebimento());
-
+        $this->frete->setAvisoDeRecebimento(false);
+        $this->assertEquals('N', $this->frete->getAvisoDeRecebimento());
     }
 
-
-    /** 
-    * Verifica se os get e set 'mão própria' está funcionando
-    * 
-    * @test
-    * 
-    * @return void
-    */
+    /**
+     * Verifica se os get e set 'mão própria' está funcionando
+     * 
+     * @test
+     * 
+     * @return void
+     */
     public function verificaGetterAndSetterMaoPropria()
     {
-        $maoProria = 'S';
-        $this->frete->setMaoPropria($maoProria);
-        $this->assertEquals($maoProria, $this->frete->getMaoPropria());
+        $this->frete->setMaoPropria(true);
+        $this->assertEquals('S', $this->frete->getMaoPropria());
 
-        $maoProria = 'N';
-        $this->frete->setMaoPropria($maoProria);
-        $this->assertEquals($maoProria, $this->frete->getMaoPropria());
+        $this->frete->setMaoPropria(false);
+        $this->assertEquals('N', $this->frete->getMaoPropria());
     }
 
     /**
@@ -241,15 +230,15 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
      */
     public function verificaGetterAndSetterDoFormatoDaEncomenda()
     {
-        $formato = 'caixa';
+        $formato = RsCorreios::FORMATO_CAIXA;
         $this->frete->setFormatoDaEncomenda($formato);
         $this->assertEquals(1, $this->frete->getFormatoDaEncomenda());
 
-        $formato = 'rolo';
+        $formato = RsCorreios::FORMATO_ROLO;
         $this->frete->setFormatoDaEncomenda($formato);
         $this->assertEquals(2, $this->frete->getFormatoDaEncomenda());
 
-        $formato = 'envelope';
+        $formato = RsCorreios::FORMATO_ENVELOPE;
         $this->frete->setFormatoDaEncomenda($formato);
         $this->assertEquals(3, $this->frete->getFormatoDaEncomenda());
     }
@@ -332,22 +321,22 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $this->frete->setServico("41106");
 
 
-        $url  = $this->webServiceUrl;
+        $url = $this->webServiceUrl;
         $url .= "?nCdEmpresa=";
         $url .= "&sDsSenha=";
+        $url .= "&nCdServico=" . $this->frete->getServico();
         $url .= "&sCepOrigem=" . $this->frete->getCepOrigem();
-        $url .= "&setCepDestino=" . $this->frete->getCepDestino();
+        $url .= "&sCepDestino=" . $this->frete->getCepDestino();
         $url .= "&nVlPeso=" . $this->frete->getPeso();
         $url .= "&nCdFormato=" . $this->frete->getFormatoDaEncomenda();
         $url .= "&nVlComprimento=" . $this->frete->getComprimento();
         $url .= "&nVlAltura=" . $this->frete->getAltura();
         $url .= "&nVlLargura=" . $this->frete->getLargura();
+        $url .= "&nVlDiametro=0";
         $url .= "&sCdMaoPropria=" . $this->frete->getMaoPropria();
         $url .= "&nVlValorDeclarado=" . $this->frete->getValorDeclarado();
         $url .= "&sCdAvisoRecebimento=" . $this->frete->getAvisoDeRecebimento();
-        $url .= "&nCdServico=" . $this->frete->getServico();
-        $url .= "&nVlDiametro=0";
-        $url .= "&StrRetorno=xml";
+        $url .= "&StrRetorno=XML";
 
         $this->assertEquals($url, $this->frete->getWebServiceUrl());
     }
@@ -360,7 +349,7 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
      * @return void;
      */
     public function verificaSeARespostaDoWebServiceFoiRecebidaCorretamente()
-    {        
+    {
         $client = $this->getMock('RsCorreios', array('conecta'));
         $client->expects($this->once())
             ->method('conecta')
@@ -389,7 +378,7 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
 
         $respostaControle = simplexml_load_string($this->resposta);
 
-        $arrayResposta                      = array();
+        $arrayResposta = array();
         $arrayResposta['servico']           = '41106';
         $arrayResposta['valor']             = '10,50';
         $arrayResposta['prazoEntrega']      = '3';
@@ -409,11 +398,9 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $resposta = $client->getDadosFrete();
 
         // O código do serviço foi retornado?
-        $this->assertEquals($respostaControle->cServico->Codigo,
-            $resposta['servico']);
+        $this->assertEquals($respostaControle->cServico->Codigo, $resposta['servico']);
         // Valor do serviço
-        $this->assertEquals($respostaControle->cServico->Valor,
-            $resposta['valor']);
+        $this->assertEquals($respostaControle->cServico->Valor, $resposta['valor']);
         // Prazo de Entrega
         $this->assertEquals($respostaControle->cServico->PrazoEntrega,
             $resposta['prazoEntrega']);
@@ -430,13 +417,12 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         $this->assertEquals($respostaControle->cServico->EntregaDomiciliar,
             $resposta['entregaDomiciliar']);
         // Entrega sábado
-        $this->assertEquals($respostaControle->cServico->EntregaSabado, 
+        $this->assertEquals($respostaControle->cServico->EntregaSabado,
             $resposta['entregaSabado']);
         // Erro ?
-        $this->assertEquals($respostaControle->cServico->Erro, 
-            $resposta['erro']);
+        $this->assertEquals($respostaControle->cServico->Erro, $resposta['erro']);
         // Mensagem de Erro ?
-        $this->assertEquals($respostaControle->cServico->MsgErro, 
+        $this->assertEquals($respostaControle->cServico->MsgErro,
             $resposta['msgErro']);
     }
 
