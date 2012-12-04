@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Este arquivo contém a classe RsCorreios cujo objetivo é se
  * comunicar com o WS dos Correios para obter cálculo de frete.
@@ -26,471 +25,490 @@
  * @version  Release: <1.0>
  * @link     www.rodrigodossantos.ws
  */
-class RsCorreios
-{
+class RsCorreios {
 
-    const TIPO_SEDEX          = 40010;
-    const TIPO_SEDEX_A_COBRAR = 40045;
-    const TIPO_SEDEX_10       = 40215;
-    const TIPO_SEDEX_HOJE     = 40290;
-    const TIPO_PAC            = 41106;
-    const FORMATO_CAIXA       = '1';
-    const FORMATO_ROLO        = '2';
-    const FORMATO_ENVELOPE    = '3';
+	const TIPO_SEDEX = 40010;
+	const TIPO_SEDEX_A_COBRAR = 40045;
+	const TIPO_SEDEX_10 = 40215;
+	const TIPO_SEDEX_HOJE = 40290;
+	const TIPO_PAC = 41106;
 
-    protected $cepOrigem;
-    protected $cepDestino;
-    protected $peso;
-    protected $altura;
-    protected $comprimento;
-    protected $largura;
-    protected $maoPropria         = false;
-    protected $avisoDeRecebimento = false;
-    protected $formatoDaEncomenda = 1;
-    protected $servico;
-    protected $valorDeclarado     = 0;
-    protected $webServiceUrl      = 'http://ws.correios.com.br';
-    protected $webServiceUrlPath  = '/calculador/CalcPrecoPrazo.aspx';
-    public $resposta;
+	const FORMATO_CAIXA = '1';
+	const FORMATO_ROLO = '2';
+	const FORMATO_ENVELOPE = '3';
 
-    /**
-     * Filtra a string e retorna somente os números
-     *
-     * @param string $string String de entrada
-     *
-     * @return string
-     */
-    private function _somenteNumeros($string)
-    {
-        return preg_replace("/[^0-9]/", "", $string);
-    }
+	protected $cepOrigem;
+	protected $cepDestino;
+	protected $peso;
+	protected $altura;
+	protected $comprimento;
+	protected $largura;
+	protected $maoPropria = false;
+	protected $avisoDeRecebimento = false;
+	protected $formatoDaEncomenda = 1;
+	protected $servico;
+	protected $valorDeclarado = 0;
+	protected $webServiceUrl = 'http://ws.correios.com.br';
+	protected $webServiceUrlPath = '/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo';
+	public $resposta;
 
-    /**
-     * Retorna um valor formatado com duas casas decimais
-     * Ex.: 10600
-     *
-     * @param string $valor String de entrada
-     *
-     * @return string
-     */
-    private function _formataValor($valor)
-    {
-        return sprintf("%01.2f", $valor);
-    }
+	/**
+	 * Filtra a string e retorna somente os números
+	 *
+	 * @param string $string String de entrada
+	 *
+	 * @return string
+	 */
+	private function _somenteNumeros($string)
+	{
+		return preg_replace("/[^0-9]/", "", $string);
+	}
 
-    /**
-     * Retorna uma string formatada para as medidas de peso
-     * para que fique com 3 casas decimais. Ex.: 1.000
-     *
-     * @param string $string String de entrada
-     *
-     * @return string
-     */
-    private function _formataPeso($string)
-    {
-        return sprintf("%01.3f", $string);
-    }
+	/**
+	 * Retorna um valor formatado com duas casas decimais
+	 * Ex.: 10600
+	 *
+	 * @param string $valor String de entrada
+	 *
+	 * @return string
+	 */
+	private function _formataValor($valor)
+	{
+		return sprintf("%01.2f", $valor);
+	}
 
-    /**
-     * Define o CEP de Origem
-     *
-     * @param string $cepOrigem CEP de Origem
-     *
-     * @return RsCorreios
-     */
-    public function setCepOrigem($cepOrigem)
-    {
-        $this->cepOrigem = $this->_somenteNumeros($cepOrigem);
+	/**
+	 * Retorna uma string formatada para as medidas de peso
+	 * para que fique com 3 casas decimais. Ex.: 1.000
+	 *
+	 * @param string $string String de entrada
+	 *
+	 * @return string
+	 */
+	private function _formataPeso($string)
+	{
+		return sprintf("%01.3f", $string);
+	}
 
-        return $this;
-    }
+	/**
+	 * Define o CEP de Origem
+	 *
+	 * @param string $cepOrigem CEP de Origem
+	 *
+	 * @return RsCorreios
+	 */
+	public function setCepOrigem($cepOrigem)
+	{
+		$this->cepOrigem = $this->_somenteNumeros($cepOrigem);
 
-    /**
-     * Obtém o CEP de Origem
-     *
-     * @return string
-     */
-    public function getCepOrigem()
-    {
-        return $this->cepOrigem;
-    }
+		return $this;
+	}
 
-    /**
-     * Define o CEP de Destino
-     *
-     * @param string $cepDestino CEP de Destino
-     *
-     * @return RsCorreios
-     */
-    public function setCepDestino($cepDestino)
-    {
-        $this->cepDestino = $this->_somenteNumeros($cepDestino);
+	/**
+	 * Obtém o CEP de Origem
+	 *
+	 * @return string
+	 */
+	public function getCepOrigem()
+	{
+		return $this->cepOrigem;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define o CEP de Destino
+	 *
+	 * @param string $cepDestino CEP de Destino
+	 *
+	 * @return RsCorreios
+	 */
+	public function setCepDestino($cepDestino)
+	{
+		$this->cepDestino = $this->_somenteNumeros($cepDestino);
 
-    /**
-     * Obtém o CEP de Destino
-     *
-     * @return string
-     */
-    public function getCepDestino()
-    {
-        return $this->cepDestino;
-    }
+		return $this;
+	}
 
-    /**
-     * Define o Peso da encomenda
-     *
-     * @param string $peso Peso da encomenda em Kg
-     *
-     * @return RsCorreios
-     */
-    public function setPeso($peso)
-    {
-        $this->peso = $this->_formataPeso($peso);
+	/**
+	 * Obtém o CEP de Destino
+	 *
+	 * @return string
+	 */
+	public function getCepDestino()
+	{
+		return $this->cepDestino;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define o Peso da encomenda
+	 *
+	 * @param string $peso Peso da encomenda em Kg
+	 *
+	 * @return RsCorreios
+	 */
+	public function setPeso($peso)
+	{
+		$this->peso = $this->_formataPeso($peso);
 
-    /**
-     * Obtém o peso da encomenda
-     *
-     * @return string
-     */
-    public function getPeso()
-    {
-        return $this->peso;
-    }
+		return $this;
+	}
 
-    /**
-     * Define a Altura da encomenda
-     *
-     * @param string $altura Altura da encomenda em Cm
-     *
-     * @return RsCorreios
-     */
-    public function setAltura($altura)
-    {
-        $this->altura = $this->_somenteNumeros($altura);
+	/**
+	 * Obtém o peso da encomenda
+	 *
+	 * @return string
+	 */
+	public function getPeso()
+	{
+		return $this->peso;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define a Altura da encomenda
+	 *
+	 * @param string $altura Altura da encomenda em Cm
+	 *
+	 * @return RsCorreios
+	 */
+	public function setAltura($altura)
+	{
+		$this->altura = $this->_somenteNumeros($altura);
 
-    /**
-     * Obtém a altura da encomenda
-     *
-     * @return string
-     */
-    public function getAltura()
-    {
-        return $this->altura;
-    }
+		return $this;
+	}
 
-    /**
-     * Define o Comprimento da encomenda
-     *
-     * @param string $comprimento Comprimento da encomenda em Cm
-     *
-     * @return RsCorreios
-     */
-    public function setComprimento($comprimento)
-    {
-        $this->comprimento = $this->_somenteNumeros($comprimento);
+	/**
+	 * Obtém a altura da encomenda
+	 *
+	 * @return string
+	 */
+	public function getAltura()
+	{
+		return $this->altura;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define o Comprimento da encomenda
+	 *
+	 * @param string $comprimento Comprimento da encomenda em Cm
+	 *
+	 * @return RsCorreios
+	 */
+	public function setComprimento($comprimento)
+	{
+		$this->comprimento = $this->_somenteNumeros($comprimento);
 
-    /**
-     * Obtém o comprimento da encomenda
-     *
-     * @return string
-     */
-    public function getComprimento()
-    {
-        return $this->comprimento;
-    }
+		return $this;
+	}
 
-    /**
-     * Define a Largura da encomenda
-     *
-     * @param string $largura Largura da encomenda em Cm
-     *
-     * @return RsCorreios
-     */
-    public function setLargura($largura)
-    {
-        $this->largura = $this->_somenteNumeros($largura);
+	/**
+	 * Obtém o comprimento da encomenda
+	 *
+	 * @return string
+	 */
+	public function getComprimento()
+	{
+		return $this->comprimento;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define a Largura da encomenda
+	 *
+	 * @param string $largura Largura da encomenda em Cm
+	 *
+	 * @return RsCorreios
+	 */
+	public function setLargura($largura)
+	{
+		$this->largura = $this->_somenteNumeros($largura);
 
-    /**
-     * Obtém a largura da encomenda
-     *
-     * @return string
-     */
-    public function getLargura()
-    {
-        return $this->largura;
-    }
+		return $this;
+	}
 
-    /**
-     * Informa se a encomenda deve ser entregue com a opção "Mão Própria"
-     *
-     * @param boolean $flag true = sim | false = não
-     *
-     * @return RsCorreios
-     */
-    public function setMaoPropria($flag)
-    {
-        $this->maoPropria = $flag;
+	/**
+	 * Obtém a largura da encomenda
+	 *
+	 * @return string
+	 */
+	public function getLargura()
+	{
+		return $this->largura;
+	}
 
-        return $this;
-    }
+	/**
+	 * Informa se a encomenda deve ser entregue com a opção "Mão Própria"
+	 *
+	 * @param boolean $flag
+	 *
+	 * @return RsCorreios
+	 */
+	public function setMaoPropria($flag)
+	{
+		$this->maoPropria = $flag;
 
-    /**
-     * Obtém a informação se a encomenda deve ser entregue
-     * com a opção "Mão Própria"
-     * true = sim; false = não
-     *
-     * @return boolean
-     */
-    public function getMaoPropria()
-    {
-        return $this->maoPropria ? 'S' : 'N';
-    }
+		return $this;
+	}
 
-    /**
-     * Informa se o serviço "Aviso de Recebimento" será utilizado
-     * S = sim; N = não
-     *
-     * @param boolean $flag S ou N
-     *
-     * @return RsCorreios
-     */
-    public function setAvisoDeRecebimento($flag)
-    {
-        $this->avisoDeRecebimento = (bool) $flag;
+	/**
+	 * Obtém a informação se a encomenda deve ser entregue
+	 * com a opção "Mão Própria"
+	 * true = sim; false = não
+	 *
+	 * @return boolean
+	 */
+	public function getMaoPropria()
+	{
+		return $this->maoPropria;
+	}
 
-        return $this;
-    }
+	/**
+	 * Informa se o serviço "Aviso de Recebimento" será utilizado
+	 * S = sim; N = não
+	 *
+	 * @param boolean $flag S ou N
+	 *
+	 * @return RsCorreios
+	 */
+	public function setAvisoDeRecebimento($flag)
+	{
+		$this->avisoDeRecebimento = (bool) $flag;
 
-    /**
-     * Obtém a informação se a encomenda deve ser entregue
-     * com a opção "Aviso de Recebimento"
-     * S = sim; N = não
-     *
-     * @return boolean
-     */
-    public function getAvisoDeRecebimento()
-    {
-        return $this->avisoDeRecebimento ? 'S' : 'N';
-    }
+		return $this;
+	}
 
-    /**
-     * Define o Formato da Encomenda (Caixa = 1, Rolo = 2, Envelope = 3)
-     * Lança uma exceção caso um valor diferente seja passado como parâmetro
-     *
-     * @param int $formato Usar as constantes RsCorreios::FORMATO_*
-     *
-     * @throws InvalidArgumentException
-     * @return RsCorreios
-     */
-    public function setFormatoDaEncomenda($formato)
-    {
-        $whiteList = array(
-            self::FORMATO_CAIXA => true,
-            self::FORMATO_ROLO => true,
-            self::FORMATO_ENVELOPE => true
-        );
+	/**
+	 * Obtém a informação se a encomenda deve ser entregue
+	 * com a opção "Aviso de Recebimento"
+	 * S = sim; N = não
+	 *
+	 * @return boolean
+	 */
+	public function getAvisoDeRecebimento()
+	{
+		return $this->avisoDeRecebimento;
+	}
 
-        if (isset($whiteList[$formato])) {
-            $this->formatoDaEncomenda = $formato;
-        } else {
-            throw new InvalidArgumentException("Formato de Encomenda Inválido");
-        }
+	/**
+	 * Define o Formato da Encomenda (Caixa = 1, Rolo = 2, Envelope = 3)
+	 * Lança uma exceção caso um valor diferente seja passado como parâmetro
+	 *
+	 * @param int $formato Usar as constantes RsCorreios::FORMATO_*
+	 *
+	 * @throws InvalidArgumentException
+	 * @return RsCorreios
+	 */
+	public function setFormatoDaEncomenda($formato)
+	{
+		$whiteList = array(
+			self::FORMATO_CAIXA    => true,
+			self::FORMATO_ROLO     => true,
+			self::FORMATO_ENVELOPE => true
+		);
 
-        return $this;
-    }
+		if (isset($whiteList[$formato]))
+		{
+			$this->formatoDaEncomenda = $formato;
+		}
+		else
+		{
+			throw new InvalidArgumentException("Formato de Encomenda Inválido");
+		}
 
-    /**
-     * Obtém o Formato da Encomenda
-     *
-     * @return int 1 = Caixa, 2 = Rolo, 3 = Envelope
-     */
-    public function getFormatoDaEncomenda()
-    {
-        return $this->formatoDaEncomenda;
-    }
+		return $this;
+	}
 
-    /**
-     * Define o Serviço de entrega a ser utilizado
-     * (somente as opções sem contrato):
-     * 40010 SEDEX sem contrato
-     * 40045 SEDEX a Cobrar, sem contrato
-     * 40215 SEDEX 10, sem contrato
-     * 40290 SEDEX Hoje, sem contrato
-     * 41106 PAC sem contrato
-     *
-     * Lança uma exceção caso um valor diferente seja passado como parâmetro
-     *
-     * @param int $servico Usar as constantes RsCorreios::TIPO_*
-     *
-     * @throws InvalidArgumentException
-     * @return RsCorreios
-     */
-    public function setServico($servico)
-    {
-        $whiteList = array(
-            self::TIPO_PAC => true,
-            self::TIPO_SEDEX => true,
-            self::TIPO_SEDEX_10 => true,
-            self::TIPO_SEDEX_A_COBRAR => true,
-            self::TIPO_SEDEX_HOJE => true,
-        );
+	/**
+	 * Obtém o Formato da Encomenda
+	 *
+	 * @return int 1 = Caixa, 2 = Rolo, 3 = Envelope
+	 */
+	public function getFormatoDaEncomenda()
+	{
+		return $this->formatoDaEncomenda;
+	}
 
-        if (isset($whiteList[$servico])) {
-            $this->servico = $servico;
-        } else {
-            throw new InvalidArgumentException("Número de Serviço Inválido");
-        }
+	/**
+	 * Define o Serviço de entrega a ser utilizado
+	 * (somente as opções sem contrato):
+	 * 40010 SEDEX sem contrato
+	 * 40045 SEDEX a Cobrar, sem contrato
+	 * 40215 SEDEX 10, sem contrato
+	 * 40290 SEDEX Hoje, sem contrato
+	 * 41106 PAC sem contrato
+	 *
+	 * Lança uma exceção caso um valor diferente seja passado como parâmetro
+	 *
+	 * @param int $servico Usar as constantes RsCorreios::TIPO_*
+	 *
+	 * @throws InvalidArgumentException
+	 * @return RsCorreios
+	 */
+	public function setServico($servico)
+	{
+		$whiteList = array(
+			self::TIPO_PAC            => true,
+			self::TIPO_SEDEX          => true,
+			self::TIPO_SEDEX_10       => true,
+			self::TIPO_SEDEX_A_COBRAR => true,
+			self::TIPO_SEDEX_HOJE     => true,
+		);
 
-        return $this;
-    }
+		if (isset($whiteList[$servico]))
+		{
+			$this->servico = $servico;
+		}
+		else
+		{
+			throw new InvalidArgumentException("Número de Serviço Inválido");
+		}
 
-    /**
-     * Obtém o Código do Serviço de Entrega
-     *
-     * @return int
-     */
-    public function getServico()
-    {
-        return $this->servico;
-    }
+		return $this;
+	}
 
-    /**
-     * Define o Valor Declarado da encomenda
-     *
-     * @param string $valor Peso da encomenda em Kg
-     *
-     * @return RsCorreios
-     */
-    public function setValorDeclarado($valor)
-    {
-        $this->valorDeclarado = $this->_formataValor($valor);
+	/**
+	 * Obtém o Código do Serviço de Entrega
+	 *
+	 * @return int
+	 */
+	public function getServico()
+	{
+		return $this->servico;
+	}
 
-        return $this;
-    }
+	/**
+	 * Define o Valor Declarado da encomenda
+	 *
+	 * @param string $valor Peso da encomenda em Kg
+	 *
+	 * @return RsCorreios
+	 */
+	public function setValorDeclarado($valor)
+	{
+		$this->valorDeclarado = $this->_formataValor($valor);
 
-    /**
-     * Obtém o valor declarado da encomenda
-     *
-     * @return string
-     */
-    public function getValorDeclarado()
-    {
-        return $this->valorDeclarado;
-    }
+		return $this;
+	}
 
-    /**
-     * Junta a URL de WebService dos Correios com as demais variáveis que
-     * precisam ser enviadas.
-     *
-     * @return string URL do WebService + QueryString
-     */
-    public function getWebServiceUrl()
-    {
-        $url = $this->webServiceUrl . $this->webServiceUrlPath . '?';
+	/**
+	 * Obtém o valor declarado da encomenda
+	 *
+	 * @return string
+	 */
+	public function getValorDeclarado()
+	{
+		return $this->valorDeclarado;
+	}
 
-        $params = array(
-            "nCdEmpresa" => '',
-            "sDsSenha" => '',
-            "nCdServico" => $this->getServico(),
-            "sCepOrigem" => $this->getCepOrigem(),
-            "sCepDestino" => $this->getCepDestino(),
-            "nVlPeso" => $this->getPeso(),
-            "nCdFormato" => $this->getFormatoDaEncomenda(),
-            "nVlComprimento" => $this->getComprimento(),
-            "nVlAltura" => $this->getAltura(),
-            "nVlLargura" => $this->getLargura(),
-            "nVlDiametro" => '0',
-            "sCdMaoPropria" => $this->getMaoPropria(),
-            "nVlValorDeclarado" => $this->getValorDeclarado(),
-            "sCdAvisoRecebimento" => $this->getAvisoDeRecebimento(),
-            "StrRetorno" => 'XML'
-        );
+	/**
+	 * Junta a URL de WebService dos Correios com as demais variáveis que
+	 * precisam ser enviadas.
+	 *
+	 * @return string URL do WebService + QueryString
+	 */
+	public function getWebServiceUrl()
+	{
+		$url = $this->webServiceUrl . $this->webServiceUrlPath . '?';
 
-        return $url . http_build_query($params, '', '&');
-    }
+		$params = array(
+			"nCdEmpresa"          => '',
+			"sDsSenha"            => '',
+			"nCdServico"          => $this->getServico(),
+			"sCepOrigem"          => $this->getCepOrigem(),
+			"sCepDestino"         => $this->getCepDestino(),
+			"nVlPeso"             => $this->getPeso(),
+			"nCdFormato"          => $this->getFormatoDaEncomenda(),
+			"nVlComprimento"      => $this->getComprimento(),
+			"nVlAltura"           => $this->getAltura(),
+			"nVlLargura"          => $this->getLargura(),
+			"nVlDiametro"         => '0',
+			"sCdMaoPropria"       => $this->getMaoPropria() ? 'S' : 'N',
+			"nVlValorDeclarado"   => $this->getValorDeclarado(),
+			"sCdAvisoRecebimento" => $this->getAvisoDeRecebimento() ? 'S' : 'N',
+			//"StrRetorno"          => 'XML'
+		);
 
-    /**
-     * Conecta-se via cURL a um endereço e retorna a resposta
-     *
-     * @param string $url URL que será chamada
-     *
-     * @return string
-     */
-    private function _getDataFromUrl($url)
-    {
-        $ch       = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        ob_start();
-        curl_exec($ch);
-        $response = ob_get_contents();
-        ob_end_clean();
+		return $url . http_build_query($params, '', '&');
+	}
 
-        return $response;
-    }
+	/**
+	 * Conecta-se via cURL a um endereço e retorna a resposta
+	 *
+	 * @param string $url URL que será chamada
+	 *
+	 * @return string
+	 */
+	private function _getDataFromUrl($url)
+	{
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec($ch);
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
 
-    /**
-     * Conecta-se aos correios e retorna o XML
-     * com o resultado da consulta do frete
-     *
-     * @return string
-     */
-    public function conecta()
-    {
-        $url      = $this->getWebServiceUrl();
-        $resposta = $this->_getDataFromUrl($url);
+		return array($httpCode, $response);
+	}
 
-        return $resposta;
-    }
+	/**
+	 * Conecta-se aos correios e retorna o XML
+	 * com o resultado da consulta do frete
+	 *
+	 * @return string
+	 */
+	public function conecta()
+	{
+		$url = $this->getWebServiceUrl();
+		$resposta = $this->_getDataFromUrl($url);
 
-    /**
-     * Trata os dados recebidos pelo WS dos correios
-     *
-     * @throws Exception
-     * @return array
-     */
-    public function dados()
-    {
+		return $resposta;
+	}
 
-        $response = $this->conecta();
+	/**
+	 * Trata os dados recebidos pelo WS dos correios
+	 *
+	 * @throws Exception
+	 * @return array
+	 */
+	public function dados()
+	{
 
-        $xml = simplexml_load_string($response);
+		$response = $this->conecta();
 
-        $resposta = array();
+		$resposta = array();
 
-        if ($xml !== false) {
-            $resposta['servico']           = (string) $xml->cServico->Codigo;
-            $resposta['valor']             = str_replace(
-                ',', '.', (string) $xml->cServico->Valor
-            );
-            $resposta['prazoEntrega']      = (string) $xml->cServico->PrazoEntrega;
-            $resposta['maoPropria']        = (string) $xml->cServico->ValorMaoPropria;
-            $resposta['avisoRecebimento']  = (string) $xml->cServico->ValorAvisoRecebimento;
-            $resposta['valorDeclarado']    = (string) $xml->cServico->ValorValorDeclarado;
-            $resposta['entregaDomiciliar'] = (string) $xml->cServico->EntregaDomiciliar;
-            $resposta['entregaSabado']     = (string) $xml->cServico->EntregaSabado;
-            $resposta['erro']              = (string) $xml->cServico->Erro;
-            $resposta['msgErro']           = (string) $xml->cServico->MsgErro;
-        } else {
-            throw new Exception('Resposta XML malformada');
-        }
+		if ($response[0] === 200)
+		{
+			$xml = simplexml_load_string($response[1]);
 
-        return $resposta;
-    }
+			if ($xml !== false)
+			{
+				$servico = $xml->Servicos->cServico[0];
+				$resposta['servico'] = (string) $servico->Codigo;
+				$resposta['valor'] = str_replace(',', '.', (string) $servico->Valor);
+				$resposta['prazoEntrega'] = (string) $servico->PrazoEntrega;
+				$resposta['maoPropria'] = (string) $servico->ValorMaoPropria;
+				$resposta['avisoRecebimento'] = (string) $servico->ValorAvisoRecebimento;
+				$resposta['valorDeclarado'] = (string) $servico->ValorValorDeclarado;
+				$resposta['entregaDomiciliar'] = (string) $servico->EntregaDomiciliar;
+				$resposta['entregaSabado'] = (string) $servico->EntregaSabado;
+				$resposta['erro'] = (string) $servico->Erro;
+				$resposta['msgErro'] = (string) $servico->MsgErro;
+			}
+			else
+			{
+				throw new Exception('Resposta XML malformada');
+			}
+		}
+		else
+		{
+			$match = preg_match('/(Missing parameter: [^\.]+)\./', $response[1], $matches);
 
+			$resposta = array(
+				'erro' => $response[0],
+				'msgErro' => $match ? $matches[1] : $response[1]
+			);
+		}
+
+		return $resposta;
+	}
 }
