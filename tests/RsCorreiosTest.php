@@ -41,8 +41,8 @@ class RsCorreiosTest extends PHPUnit_Framework_Testcase
         parent::setUp();
 
         $this->frete = new RsCorreios();
-        $this->webServiceUrl = "http://ws.correios.com.br/";
-        $this->webServiceUrl .= "calculador/CalcPrecoPrazo.aspx";
+        $this->webServiceUrl = "http://ws.correios.com.br";
+        $this->webServiceUrl .= "/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo";
         $this->resposta = '<?xml version="1.0" encoding="ISO-8859-1" ?>';
         $this->resposta .= '<Servicos><cServico>';
         $this->resposta .= '<Codigo>41106</Codigo>';

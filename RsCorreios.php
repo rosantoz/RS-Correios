@@ -50,7 +50,7 @@ class RsCorreios
     protected $servico;
     protected $valorDeclarado     = 0;
     protected $webServiceUrl      = 'http://ws.correios.com.br';
-    protected $webServiceUrlPath  = '/calculador/CalcPrecoPrazo.aspx';
+    protected $webServiceUrlPath  = '/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo';
     public $resposta;
 
     /**
@@ -429,7 +429,7 @@ class RsCorreios
      *
      * @param string $url URL que será chamada
      *
-     * @return string
+     * @return array 0 => Status Code 1 => Response
      */
     private function _getDataFromUrl($url)
     {
@@ -441,7 +441,11 @@ class RsCorreios
         $response = ob_get_contents();
         ob_end_clean();
 
-        return $response;
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        curl_close($ch);
+
+        return array($httpCode, $response);
     }
 
     /**
@@ -469,27 +473,39 @@ class RsCorreios
 
         $response = $this->conecta();
 
-        $xml = simplexml_load_string($response);
+        // return $response;
 
         $resposta = array();
 
-        if ($xml !== false) {
-            $resposta['servico']           = (string) $xml->cServico->Codigo;
-            $resposta['valor']             = str_replace(
-                ',', '.', (string) $xml->cServico->Valor
-            );
-            $resposta['prazoEntrega']      = (string) $xml->cServico->PrazoEntrega;
-            $resposta['maoPropria']        = (string) $xml->cServico->ValorMaoPropria;
-            $resposta['avisoRecebimento']  = (string) $xml->cServico->ValorAvisoRecebimento;
-            $resposta['valorDeclarado']    = (string) $xml->cServico->ValorValorDeclarado;
-            $resposta['entregaDomiciliar'] = (string) $xml->cServico->EntregaDomiciliar;
-            $resposta['entregaSabado']     = (string) $xml->cServico->EntregaSabado;
-            $resposta['erro']              = (string) $xml->cServico->Erro;
-            $resposta['msgErro']           = (string) $xml->cServico->MsgErro;
-        } else {
-            throw new Exception('Resposta XML malformada');
-        }
+        if ($response[0] === 200) {
 
+            $xml = simplexml_load_string($response[1]);
+
+            if ($xml !== false) {
+                $servico = $xml->Servicos->cServico[0];
+
+                $resposta['servico']           = (string) $servico->Codigo;
+                $resposta['valor']             = str_replace(',', '.',
+                    (string) $servico->Valor);
+                $resposta['prazoEntrega']      = (string) $servico->PrazoEntrega;
+                $resposta['maoPropria']        = (string) $servico->ValorMaoPropria;
+                $resposta['avisoRecebimento']  = (string) $servico->ValorAvisoRecebimento;
+                $resposta['valorDeclarado']    = (string) $servico->ValorValorDeclarado;
+                $resposta['entregaDomiciliar'] = (string) $servico->EntregaDomiciliar;
+                $resposta['entregaSabado']     = (string) $servico->EntregaSabado;
+                $resposta['erro']              = (string) $servico->Erro;
+                $resposta['msgErro']           = (string) $servico->MsgErro;
+            } else {
+                throw new Exception('Resposta XML malformada');
+            }
+        } else {
+            $match    = preg_match('/(Missing parameter: [^\.]+)\./', $response[1],
+                $matches);
+            $resposta = array(
+                'erro' => $response[0],
+                'msgErro' => $match ? $matches[1] : $response[1]
+            );
+        }
         return $resposta;
     }
 
